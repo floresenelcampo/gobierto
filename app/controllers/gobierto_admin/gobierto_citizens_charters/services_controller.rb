@@ -42,6 +42,8 @@ module GobiertoAdmin
       end
 
       def update
+        load_service
+
         @service_form = ServiceForm.new(service_params.merge(id: params[:id], site_id: current_site.id))
         @custom_fields_form = ::GobiertoAdmin::GobiertoCommon::CustomFieldRecordsForm.new(site_id: current_site.id, item: @service)
         @custom_fields_form.custom_field_records = custom_params
