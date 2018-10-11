@@ -20,7 +20,7 @@ module GobiertoCommon
 
         belongs_to(
           singularized_name,
-          ->(item) { where(vocabulary_id: item.class.send( "#{ name }_vocabulary_id", item&.site )) },
+          ->(item) { where(vocabulary_id: item.class.send("#{ name }_vocabulary_id", item&.site)) },
           extra_opts.merge(class_name: "GobiertoCommon::Term")
         )
 
