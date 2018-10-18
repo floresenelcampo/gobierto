@@ -9,12 +9,14 @@ module GobiertoAdmin
       end
 
       def new
+        set_vocabulary
         @service_form = ServiceForm.new(site_id: current_site.id)
         render(:new_modal, layout: false) && return if request.xhr?
       end
 
       def edit
         load_service
+        set_vocabulary
 
         @service_form = ServiceForm.new(
           @service.attributes.except(*ignored_service_attributes).merge(site_id: current_site.id)
@@ -69,6 +71,10 @@ module GobiertoAdmin
       end
 
       private
+
+      def set_vocabulary
+        @vocabulary = current_site.vocabularies.find_by_id(::GobiertoCitizensCharters::Service.categories_vocabulary_id(current_site))
+      end
 
       def load_service
         @service = current_site.services.find(params[:id])
