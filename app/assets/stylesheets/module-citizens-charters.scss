@@ -237,6 +237,7 @@
 
     .charter {
       position: relative;
+      display: flex;
 
       &::before {
         content: "";
@@ -260,7 +261,9 @@
       .charter-inner {
         position: relative;
         padding: 2rem;
-        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
       }
 
       .charter-number {
