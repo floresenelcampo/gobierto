@@ -13,7 +13,7 @@
   <div class="charter-header">
     <div class="column">
       <h1><%= @charter.title %></h1>
-      <%= image_tag('illustrations/personaliza.jpg') %>
+      <%= image_tag(custom_field_by_uid(@charter, "cover-image") || "illustrations/personaliza.jpg") %>
     </div>
   </div>
 
@@ -69,7 +69,7 @@
       <div class="charter">
         <div class="charter-inner">
           <div class="m_b_2"><%= edition.commitment.description %></div>
-          <div>            
+          <div>
             <div class="charter-number m_b_1">
               <p> <%= number_to_percentage(edition.proportion, precision: 1, strip_insignificant_zeros: true) %> </p>
               <div id="sparkline-<%= edition.id %>" class="sparkline"></div>
