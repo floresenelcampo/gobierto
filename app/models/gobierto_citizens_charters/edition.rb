@@ -10,9 +10,9 @@ module GobiertoCitizensCharters
 
     PERIOD_INTERVAL_DATA = {
       year: ->(date) { { year: date.year } },
-      quarter: ->(date) { { quarter: (date.month / 4) + 1, year: date.year } },
-      month: ->(date) { { month: date.month, year: date.year } },
-      week: ->(date) { { week: date.strftime("%W").to_i, year: date.year } }
+      quarter: ->(date) { { year: date.year, quarter: (date.month / 4) + 1 } },
+      month: ->(date) { { year: date.year, month: date.month } },
+      week: ->(date) { { year: date.year, week: date.strftime("%W").to_i } }
     }.freeze
 
     belongs_to :commitment, -> { with_archived }
@@ -32,7 +32,7 @@ module GobiertoCitizensCharters
     def self.progress
       p_rel = where.not(percentage: nil)
       p_val = where(percentage: nil).where.not(value: nil, max_value: nil)
-      (p_rel.sum(:percentage) + p_val.select("value/max_value as prop").map(&:prop).sum * 100) / (p_rel.count + p_val.count)
+      (p_rel.sum(:percentage) + p_val.sum("value/max_value") * 100) / (p_rel.count + p_val.count)
     end
 
     def period_values
