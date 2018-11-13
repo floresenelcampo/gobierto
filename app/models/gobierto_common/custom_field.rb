@@ -27,6 +27,10 @@ module GobiertoCommon
       field_types.select { |key, _| /option/.match(key) }
     end
 
+    def self.searchable_fields
+      [:localized_string, :string, :localized_paragraph, :paragraph]
+    end
+
     def has_options?
       /option/.match field_type
     end
