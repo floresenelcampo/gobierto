@@ -57,7 +57,7 @@ module GobiertoCitizensCharters
     end
 
     def resource_path
-      url_helpers.gobierto_citizens_charters_service_charter_url({ service_slug: service.slug, slug: slug }.merge(host: service.site.domain))
+      url_helpers.gobierto_citizens_charters_charter_url(slug: slug, host: service.site.domain)
     end
   end
 end
