@@ -25,18 +25,27 @@ module GobiertoAdmin
       @santander ||= sites(:santander)
     end
 
+    def madrid_group
+      @madrid_group ||= gobierto_admin_admin_groups(:madrid_group)
+    end
+
+    def santander_group
+      @santander_group ||= gobierto_admin_admin_groups(:santander_group)
+    end
+
     def admin_params
       @admin_params ||= {
+        site: madrid,
         name: admin.name,
         email: new_admin_email, # to ensure uniqueness
-        password: 'gobierto',
-        password_confirmation: 'gobierto',
-        authorization_level: 'regular'
+        password: "gobierto",
+        password_confirmation: "gobierto",
+        authorization_level: "regular"
       }.with_indifferent_access
     end
 
     def manager_admin_params
-      @manager_admin_params ||= admin_params.merge(authorization_level: 'manager')
+      @manager_admin_params ||= admin_params.merge(authorization_level: "manager")
     end
 
     def valid_admin_form
@@ -55,14 +64,14 @@ module GobiertoAdmin
     def tony
       @tony ||= gobierto_admin_admins(:tony)
     end
-    alias_method :admin, :tony
-    alias_method :regular_admin, :tony
-    alias_method :madrid_and_santander_admin, :tony
+    alias admin tony
+    alias regular_admin tony
+    alias madrid_and_santander_admin tony
 
     def steve
       @steve ||= gobierto_admin_admins(:steve)
     end
-    alias_method :only_madrid_admin, :steve
+    alias only_madrid_admin steve
 
     def new_admin_email
       "wadus@gobierto.dev"
@@ -97,7 +106,7 @@ module GobiertoAdmin
     end
 
     def test_confirmation_email_delivery_for_existing_record
-      admin_edit_form = AdminForm.new(id: admin.id)
+      admin_edit_form = AdminForm.new(id: admin.id, site: madrid)
 
       assert_no_difference "ActionMailer::Base.deliveries.size" do
         admin_edit_form.save
@@ -107,10 +116,12 @@ module GobiertoAdmin
     ## Tests related to sites permissions
 
     def test_grant_site_permissions
-      admin_form = AdminForm.new(admin_params.merge(
-        id: only_madrid_admin.id,
-        permitted_sites: [ santander.id, madrid.id ]
-      ))
+      admin_form = AdminForm.new(
+        admin_params.merge(
+          id: only_madrid_admin.id,
+          permitted_sites: [santander.id, madrid.id]
+        )
+      )
 
       assert admin_form.save
 
@@ -123,10 +134,12 @@ module GobiertoAdmin
     end
 
     def test_revoke_site_permissions
-      admin_form = AdminForm.new(admin_params.merge(
-        id: only_madrid_admin.id,
-        permitted_sites: []
-      ))
+      admin_form = AdminForm.new(
+        admin_params.merge(
+          id: only_madrid_admin.id,
+          permitted_sites: []
+        )
+      )
 
       assert admin_form.save
 
@@ -134,10 +147,12 @@ module GobiertoAdmin
     end
 
     def test_revoke_site_permissions_revokes_people_permissions
-      admin_form = AdminForm.new(admin_params.merge(
-        id: madrid_and_santander_admin.id,
-        permitted_sites: [santander.id]
-      ))
+      admin_form = AdminForm.new(
+        admin_params.merge(
+          id: madrid_and_santander_admin.id,
+          permitted_sites: [santander.id]
+        )
+      )
 
       assert_equal 2, madrid_and_santander_admin.people_permissions.size
 
@@ -148,6 +163,58 @@ module GobiertoAdmin
 
       # assert person permissions were revoked
       assert madrid_and_santander_admin.reload.people_permissions.empty?
+    end
+
+    def test_admin_groups_with_only_a_site
+      admin_form = AdminForm.new(
+        admin_params.merge(
+          id: madrid_and_santander_admin.id,
+          permitted_sites: [madrid.id],
+          admin_group_ids: [madrid_group.id]
+        )
+      )
+
+      assert admin_form.save
+
+      assert_equal [madrid_group], madrid_and_santander_admin.admin_groups
+    end
+
+    def test_admin_groups_from_not_allowed_sites_are_deleted
+      madrid_and_santander_admin.admin_groups = [madrid_group, santander_group]
+      madrid_and_santander_admin.save
+
+      admin_form = AdminForm.new(
+        admin_params.merge(
+          id: madrid_and_santander_admin.id,
+          permitted_sites: [madrid.id],
+          admin_group_ids: [madrid_group.id]
+        )
+      )
+
+      assert_equal 2, madrid_and_santander_admin.reload.admin_groups.count
+
+      assert admin_form.save
+
+      assert_equal [madrid_group], madrid_and_santander_admin.reload.admin_groups
+    end
+
+    def test_admin_groups_from_other_allowed_sites_are_preserved
+      madrid_and_santander_admin.admin_groups = [madrid_group, santander_group]
+      madrid_and_santander_admin.save
+
+      admin_form = AdminForm.new(
+        admin_params.merge(
+          id: madrid_and_santander_admin.id,
+          permitted_sites: [madrid.id, santander.id],
+          admin_group_ids: []
+        )
+      )
+
+      assert_equal 2, madrid_and_santander_admin.reload.admin_groups.count
+
+      assert admin_form.save
+
+      assert_equal [santander_group], madrid_and_santander_admin.reload.admin_groups
     end
   end
 end
