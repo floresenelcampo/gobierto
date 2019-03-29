@@ -7,13 +7,16 @@ module GobiertoAdmin
       attr_accessor(
         :id,
         :plan_id,
-        :category_id,
         :name_translations,
         :status_translations,
         :progress,
         :starts_at,
         :ends_at,
         :options_json
+      )
+      attr_writer(
+        :category_id,
+        :visibility_level
       )
 
       validates :plan, :category, :name_translations, presence: true
@@ -33,16 +36,47 @@ module GobiertoAdmin
         @node ||= ::GobiertoPlans::Node.find_by(id: id).presence || build_node
       end
       alias record node
+      alias project node
 
       def category
-        @category ||= plan.categories.find_by(id: category_id) || node.categories.where(vocabulary: plan.categories_vocabulary).first
+        @category ||= plan.categories.find_by(id: category_id)
+      end
+
+      def category_id
+        @category_id ||= node.categories.where(vocabulary: plan.categories_vocabulary).first&.id
+      end
+
+      def category_options
+        @category_options ||= plan.categories.where(level: plan.categories_vocabulary.maximum_level).sorted.map do |category|
+          [category.name, category.id]
+        end
+      end
+
+      def progress_options
+        @progress_options ||= begin
+                                divisions = 4
+                                (0..divisions).map do |div|
+                                  progress_option(div.to_f / divisions * 100.0)
+                                end +
+                                  [["- - - -", "disabled"]] +
+                                  (0..100).map { |percentage| progress_option(percentage) }
+                              end
+      end
+
+      def progress_value
+        @progress_value ||= progress.present? ? progress.to_i.to_s : nil
       end
 
       def options
         @options ||= begin
                        return nil if options_json.blank?
+
                        JSON.parse(options_json)
                      end
+      end
+
+      def visibility_level
+        @visibility_level ||= node.visibility_level || "draft"
       end
 
       private
@@ -53,6 +87,7 @@ module GobiertoAdmin
 
       def options_json_format
         return if options_json.blank? || options_json.is_a?(Hash)
+
         JSON.parse(options_json)
       rescue JSON::ParserError
         errors.add :options_json, I18n.t("errors.messages.invalid")
@@ -66,6 +101,7 @@ module GobiertoAdmin
           attributes.starts_at = starts_at
           attributes.ends_at = ends_at
           attributes.options = options
+          attributes.visibility_level = visibility_level
         end
 
         if @node.valid?
@@ -83,6 +119,10 @@ module GobiertoAdmin
 
           false
         end
+      end
+
+      def progress_option(number)
+        ["#{number.to_i}%", number.to_i]
       end
     end
   end

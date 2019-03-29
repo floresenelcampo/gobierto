@@ -3,5 +3,11 @@ es:
   gobierto_admin:
     gobierto_plans:
       projects:
+        create:
+          success: El proyecto ha sido creado correctamente.
         destroy:
           success: El proyecto ha sido eliminado correctamente.
+        find_versioned_project:
+          unavailable_version: Versión no disponible.
+        update:
+          success: El proyecto ha sido actualizado correctamente.
