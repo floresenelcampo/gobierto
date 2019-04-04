@@ -15,17 +15,17 @@ module GobiertoPlans
     scope :with_progress, ->(progress) { where("progress > ? AND progress <= ?", *progress.split("-")) }
     scope :with_interval, ->(interval) { where("starts_at >= ? AND ends_at <= ?", *interval.split(",").map { |date| Date.parse(date) }) }
 
-      extra_moderation_permissions_lookup_attributes do |_|
-        [{
-          namespace: "site_module",
-          resource_name: "gobierto_plans",
-          resource_id: nil
-        }]
-      end
+    extra_moderation_permissions_lookup_attributes do |_|
+      [{
+        namespace: "site_module",
+        resource_name: "gobierto_plans",
+        resource_id: nil
+      }]
+    end
 
-      default_moderation_stage do |node|
-        node.published? ? :approved : :not_sent
-      end
+    default_moderation_stage do |node|
+      node.published? ? :approved : :not_sent
+    end
 
     translates :name, :status
 
