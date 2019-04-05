@@ -46,8 +46,7 @@ module GobiertoPeople
           .left_outer_joins(attending_person_events: :event)
           .left_outer_joins(:trips)
           .left_outer_joins(:invitations)
-          .left_outer_joins(:received_gifts)
-          .where("gc_events.department_id = :id or gp_trips.department_id = :id or gp_invitations.department_id = :id or gp_gifts.department_id = :id", id: id)
+          .where("gc_events.department_id = :id or gp_trips.department_id = :id or gp_invitations.department_id = :id or gp_people.id IN (select distinct(person_id) from gp_gifts where department_id = :id)", id: id)
           .distinct
     end
 
