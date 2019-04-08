@@ -4,6 +4,8 @@ module GobiertoAdmin
   module GobiertoPlans
     class ProjectsController < BaseController
       before_action :find_plan
+      before_action -> { module_allowed_action!(current_admin, "GobiertoPlans", :edit) }, only: [:new, :create, :destroy]
+      before_action -> { module_allowed_action!(current_admin, "GobiertoPlans", [:edit, :moderate]) }, only: [:edit, :update]
 
       def index
         find_plan
@@ -136,7 +138,7 @@ module GobiertoAdmin
       end
 
       def ignored_project_attributes
-        %w(created_at updated_at options)
+        %w(created_at updated_at options admin_id)
       end
 
       def project_visibility_levels
