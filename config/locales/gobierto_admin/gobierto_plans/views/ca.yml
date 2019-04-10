@@ -120,6 +120,7 @@ ca:
             project: Projecte
             status: Estat
             updated: Actualitzat
+          new: Nou
           title: Projectes de %{name}
           view: Veure item
         new:
