@@ -89,6 +89,7 @@ en:
           title: New plan
       projects:
         filter_form:
+          author: Autor
           category: Category
           filter: Filter
           interval: Date interval
@@ -96,8 +97,19 @@ en:
           search: Search...
           submit: Filter
         filters_row:
+          admin_actions: Permissions
+          admin_actions_value:
+            can_edit: You can edit
+            owned: Your projects
           all: All
-          category: Category
+          moderation_stage: Moderation
+          moderation_stage_value:
+            approved: Approved
+            blank: Without moderation
+            in_review: Under review
+            not_sent: Not sent
+            rejected: Rejected
+            sent: Sent
         form:
           placeholders:
             name: Project title

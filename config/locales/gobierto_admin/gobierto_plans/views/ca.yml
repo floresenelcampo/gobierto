@@ -89,6 +89,7 @@ ca:
           title: Nou pla
       projects:
         filter_form:
+          author: Author
           category: Categoria
           filter: Filtrar
           interval: Rang de dates
@@ -96,8 +97,19 @@ ca:
           search: Cerca...
           submit: Filtrar
         filters_row:
+          admin_actions: Permisos
+          admin_actions_value:
+            can_edit: Pots editar
+            owned: Els teus projectes
           all: Tots
-          category: Categoria
+          moderation_stage: Moderació
+          moderation_stage_value:
+            approved: Aprovat
+            blank: Sense moderació_values
+            in_review: En revisió
+            not_sent: No enviat
+            rejected: No aprovat
+            sent: Sent
         form:
           placeholders:
             name: Títol del projecte

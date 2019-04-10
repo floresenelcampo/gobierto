@@ -89,6 +89,7 @@ es:
           title: Nuevo plan
       projects:
         filter_form:
+          author: Autor
           category: Categoría
           filter: Filtrar
           interval: Rango de fechas
@@ -96,8 +97,19 @@ es:
           search: Busca...
           submit: Filtrar
         filters_row:
+          admin_actions: Permisos
+          admin_actions_value:
+            can_edit: Puedes editar
+            owned: Tus proyectos
           all: Todos
-          category: Categoría
+          moderation_stage: Moderación
+          moderation_stage_value:
+            approved: Aprobado
+            blank: Sin moderación
+            in_review: En revisión
+            not_sent: No enviado
+            rejected: Rechazado
+            sent: Enviado
         form:
           placeholders:
             name: Título del proyecto
