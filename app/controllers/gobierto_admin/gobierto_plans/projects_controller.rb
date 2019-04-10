@@ -93,7 +93,11 @@ module GobiertoAdmin
       end
 
       def current_admin_actions
-        @current_admin_actions ||=  GobiertoAdmin::GobiertoPlans::ProjectPolicy.new(current_admin: current_admin, current_site: current_site, project: @project_form&.project || @project).allowed_actions
+        @current_admin_actions ||= GobiertoAdmin::GobiertoPlans::ProjectPolicy.new(
+          current_admin: current_admin,
+          current_site: current_site,
+          project: @project_form&.project || @project
+        ).allowed_actions
       end
 
       private
@@ -133,17 +137,24 @@ module GobiertoAdmin
       end
 
       def project_params
-        params.require(:project).permit(
-          :category_id,
-          :progress,
-          :starts_at,
-          :ends_at,
-          :options_json,
-          :visibility_level,
-          :moderation_stage,
-          name_translations: [*I18n.available_locales],
-          status_translations: [*I18n.available_locales]
-        )
+        if current_admin_actions.include? :update_attributes
+          params.require(:project).permit(
+            :category_id,
+            :progress,
+            :starts_at,
+            :ends_at,
+            :options_json,
+            :visibility_level,
+            :moderation_stage,
+            name_translations: [*I18n.available_locales],
+            status_translations: [*I18n.available_locales]
+          )
+        else
+          params.require(:project).permit(
+            :visibility_level,
+            :moderation_stage
+          )
+        end
       end
 
       def ignored_project_attributes
