@@ -2,6 +2,8 @@
 
 module GobiertoPlans
   class CategoryTermDecorator < BaseTermDecorator
+    include ActionView::Helpers::NumberHelper
+
     def initialize(term, options = {})
       @object = term
       @plan = options.delete(:plan)
@@ -33,11 +35,13 @@ module GobiertoPlans
     end
 
     def progress
-      @progress ||= descending_nodes.exists? ? descending_nodes.average(:progress).to_f : nil
+      return if nodes_count.zero?
+
+      @progress ||= number_to_percentage(descending_nodes.average(:progress).to_f, precision: 1, strip_insignificant_zeros: true)
     end
 
     def nodes_count
-      descending_nodes.count
+      @nodes_count ||= descending_nodes.count
     end
 
     def parent_id
@@ -73,7 +77,7 @@ module GobiertoPlans
     end
 
     def decorated_resources
-      return unless nodes.exists?
+      return if nodes_count.zero?
 
       { projects: nodes, plan: plan }
     end
