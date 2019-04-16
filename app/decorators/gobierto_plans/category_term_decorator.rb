@@ -37,7 +37,13 @@ module GobiertoPlans
     def progress
       return if nodes_count.zero?
 
-      @progress ||= number_to_percentage(descending_nodes.average(:progress).to_f, precision: 1, strip_insignificant_zeros: true)
+      @progress ||= descending_nodes.average(:progress).to_f
+    end
+
+    def progress_percentage
+      return if nodes_count.zero?
+
+      @progress_percentage ||= number_to_percentage(progress, precision: 1, strip_insignificant_zeros: true)
     end
 
     def nodes_count
@@ -73,7 +79,7 @@ module GobiertoPlans
     end
 
     def decorated_values
-      { items: nodes_count, progress: progress }
+      { items: nodes_count, progress: progress_percentage }
     end
 
     def decorated_resources
