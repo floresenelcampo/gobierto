@@ -13,13 +13,13 @@ module GobiertoAdmin
         :starts_at,
         :ends_at,
         :options_json,
-        :admin,
-        :disable_attributes_edition
+        :admin
       )
       attr_writer(
         :category_id,
         :visibility_level,
-        :moderation_stage
+        :moderation_stage,
+        :disable_attributes_edition
       )
 
       validates :plan, :admin, presence: true
@@ -30,7 +30,7 @@ module GobiertoAdmin
       delegate :site_id, to: :plan
 
       def save
-        check_visibility_level
+        check_visibility_level if allow_edit_attributes?
 
         save_node if valid?
       end
@@ -104,6 +104,10 @@ module GobiertoAdmin
 
       private
 
+      def disable_attributes_edition
+        @disable_attributes_edition && moderation_policy.moderate?
+      end
+
       def moderation_policy
         @moderation_policy ||= GobiertoAdmin::ModerationPolicy.new(current_admin: admin, current_site: site, moderable: node)
       end
@@ -113,7 +117,7 @@ module GobiertoAdmin
       end
 
       def check_visibility_level
-        return if moderation_policy.blank? || node.visibility_level == visibility_level || moderation_policy.publish?
+        return if moderation_policy.blank? || node.visibility_level == visibility_level || moderation_policy.publish_as_editor?
 
         @visibility_level = node.visibility_level
         @moderation_stage = node.moderation.available_stages_for_action(:edit).keys.first
