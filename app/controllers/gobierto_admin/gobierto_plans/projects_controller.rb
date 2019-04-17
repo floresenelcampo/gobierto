@@ -37,7 +37,7 @@ module GobiertoAdmin
 
         if @project_form.save
           success_message = if suggest_unpublish?
-                              t(".suggest_unpublish_html", url: admin_plans_plan_project_unpublish_path(@plan, @project))
+                              t(".suggest_unpublish_html", url: unpublish_admin_plans_plan_project_path(@plan, @project))
                             else
                               t(".success")
                             end
