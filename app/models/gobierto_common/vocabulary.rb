@@ -19,5 +19,15 @@ module GobiertoCommon
     def maximum_level
       terms.maximum(:level)
     end
+
+    def minimum_level
+      terms.minimum(:level)
+    end
+
+    def ordered_flatten_terms_tree
+      terms.order(position: :asc).where(level: minimum_level).map do |term|
+        term.self_and_descendents.order(:term_id).sorted
+      end.flatten
+    end
   end
 end
