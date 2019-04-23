@@ -26,7 +26,7 @@ module GobiertoCommon
 
     def ordered_flatten_terms_tree
       terms.order(position: :asc).where(level: minimum_level).map do |term|
-        term.self_and_descendents.order(:term_id).sorted
+        term.ordered_self_and_descendants
       end.flatten
     end
   end
