@@ -108,6 +108,7 @@ ignore_unused:
   - 'gobierto_admin.gobierto_plans.categories.*'
   - 'gobierto_admin.gobierto_plans.projects.publish.*'
   - 'gobierto_admin.gobierto_plans.projects.unpublish.*'
+  - 'gobierto_admin.gobierto_plans.plans.import_csv.defaults.*'
 
 translation:
   api_key: ''
