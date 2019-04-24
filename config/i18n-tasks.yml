@@ -109,6 +109,10 @@ ignore_unused:
   - 'gobierto_admin.gobierto_plans.projects.publish.*'
   - 'gobierto_admin.gobierto_plans.projects.unpublish.*'
   - 'gobierto_admin.gobierto_plans.plans.import_csv.defaults.*'
+  - 'gobierto_admin.gobierto_plans.projects.filters_row.*_value.*'
+  - 'gobierto_admin.gobierto_plans.categories.*'
+  - 'gobierto_admin.gobierto_plans.projects.publish.*'
+  - 'gobierto_admin.gobierto_plans.projects.unpublish.*'
 
 translation:
   api_key: ''
