@@ -194,6 +194,7 @@ module GobiertoAdmin
         else
           params.require(:project).permit(
             :visibility_level,
+            :moderation_visibility_level,
             :moderation_stage
           )
         end
