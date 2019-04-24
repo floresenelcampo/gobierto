@@ -53,12 +53,12 @@ module GobiertoBudgets
 
     def total_budget_updated(params = {})
       GobiertoBudgets::BudgetTotal.budgeted_updated_for(
-        budget_total_params(params).merge(fallback_to_initial_estimate: params[:fallback_to_initial_estimate])
+        budget_total_params(params).merge(fallback: params[:fallback])
       )
     end
 
     def total_budget_per_inhabitant(requested_year = year, kind = GobiertoBudgets::BudgetLine::EXPENSE)
-      amount = total_budget_updated(fallback_to_initial_estimate: true).to_f
+      amount = total_budget_updated(fallback: true).to_f
       population = population(requested_year) || population(requested_year - 1) || population(requested_year - 2)
 
       (amount / population).to_f
@@ -88,13 +88,18 @@ module GobiertoBudgets
 
     def total_budget_executed_percentage(requested_year = year)
       execution_percentage(
-        total_budget_updated(year: requested_year, fallback_to_initial_estimate: true),
+        total_budget_updated(year: requested_year, fallback: true),
         total_budget_executed(year: requested_year)
       )
     end
 
     def debt(requested_year = year)
-      @data[:debt][requested_year] ||= SearchEngine.client.get(index: SearchEngineConfiguration::Data.index, type: SearchEngineConfiguration::Data.type_debt, id: [@site.organization_id, year].join("/"))["_source"]["value"]
+      @data[:debt][requested_year] ||= SearchEngine.client.get(
+        index: SearchEngineConfiguration::Data.index,
+        type: SearchEngineConfiguration::Data.type_debt,
+        id: [@site.organization_id, requested_year].join("/")
+      )["_source"]["value"]
+
       @data[:debt][requested_year]
     rescue Elasticsearch::Transport::Transport::Errors::NotFound
       nil
@@ -275,7 +280,7 @@ module GobiertoBudgets
 
     def income_execution_percentage(requested_year = year)
       execution_percentage(
-        total_income_budget_updated(year: requested_year, fallback_to_initial_estimate: true),
+        total_income_budget_updated(year: requested_year, fallback: true),
         total_income_budget_executed(year: requested_year)
       )
     end
